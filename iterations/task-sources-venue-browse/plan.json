@@ -1,0 +1,9 @@
+{
+  "id": "task-sources-venue-browse",
+  "created_at": "2026-09-20T08:12:34.867123+00:00",
+  "baseline_version": "0.2.1",
+  "problem": "现有说明容易被理解为每次必须搜索所有渠道；会议目录补查未明确怎样发现关键词之外的工作",
+  "proposal": "按任务选择来源并记录分工；细化近几届会议目录浏览、抽查摘要及覆盖记录，保持脚本接口不变",
+  "status": "released_locally",
+  "method_effectiveness": "Not measured by regression tests; document separately when applicable"
+}

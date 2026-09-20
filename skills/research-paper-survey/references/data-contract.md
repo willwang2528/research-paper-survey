@@ -47,7 +47,7 @@
 
 这是教学示例，不是现成完备检索。provider 可为 `s2`、`arxiv`、`openalex`；S2 mode 是 `relevance` 或 `bulk`，query 的 `sort` 可选，具体值以各 provider 的实现与当前官方参数为准。日期依据为 `first_public` 或 `formal_publication`，实际过滤字段不一定与需求口径完全一致，最终由 date_evidence 验收。
 
-阅读预算、排除标准、种子、词表、停止条件、协议修订理由可放配套 `protocol-notes.md`，不假装这些文字已被机器执行。
+阅读预算、排除标准、种子、词表、停止条件、协议修订理由可放配套 `protocol-notes.md`，不假装这些文字已被机器执行。按任务选择渠道，示例中的查询与覆盖项不是每次必跑清单；执行前按实际计划调整。渠道分工与重要未选来源的理由写入该笔记，会议目录的实际浏览范围写入 `venue-scan.md`（见 templates.md），并在对应覆盖项中引用。新增这些人工记录不改变 schema，也不表示脚本自动浏览过目录。
 
 ## papers.jsonl 与 import
 

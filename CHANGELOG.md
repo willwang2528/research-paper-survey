@@ -1,5 +1,10 @@
 # Changelog
 
+## 0.2.2 — 2026-09-20
+
+- 明确按任务选渠道，无须每次全搜；细化目标会议近几届目录浏览、关键词之外候选发现及覆盖记录。兼容文档修订，无新增 API 或自动浏览能力，旧运行无需数据迁移。
+- 验证记录：[iterations/task-sources-venue-browse](iterations/task-sources-venue-browse/plan.json)。回归通过不代表研究召回率已测量。
+
 ## 0.2.1 — 2026-09-20
 
 - 将需额外GitHub授权的Actions配置保留为未启用示例，本地回归与运行能力不变

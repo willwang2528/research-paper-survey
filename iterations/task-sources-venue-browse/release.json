@@ -1,0 +1,9 @@
+{
+  "released_at": "2026-09-20T08:14:10.736159+00:00",
+  "previous_version": "0.2.1",
+  "version": "0.2.2",
+  "summary": "明确按任务选渠道，无须每次全搜；细化目标会议近几届目录浏览、关键词之外候选发现及覆盖记录。兼容文档修订，无新增 API 或自动浏览能力，旧运行无需数据迁移。",
+  "validated_source_digest": "6e26ee172e7cd64cb9b56ae227ba323e7459af9ca371697b24dff8b0e9a98f0f",
+  "released_source_digest": "b9e2aa00e52031af789f585218957f74646a57aa4ba318e20d75fff62e53a02f",
+  "publication": "local files only; commit/tag/push remain separate authorized operations"
+}
