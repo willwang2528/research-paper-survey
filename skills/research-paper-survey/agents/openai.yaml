@@ -1,0 +1,4 @@
+interface:
+  display_name: "Research Paper Survey"
+  short_description: "有证据的近期论文调研、阅读路线与版本化 SOP 迭代"
+  default_prompt: "使用 $research-paper-survey，根据我的研究问题建立需求协议，开展多路检索与全文逐项验收，交付可核查的领域地图、阅读顺序和覆盖限制，并记录本次改进反馈。"

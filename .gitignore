@@ -1,0 +1,15 @@
+.env
+.env.*
+!.env.example
+*.pem
+*.key
+credentials*.json
+secrets*.json
+__pycache__/
+*.py[cod]
+.venv/
+.pytest_cache/
+runs/
+dist/
+*-workspace/
+.DS_Store

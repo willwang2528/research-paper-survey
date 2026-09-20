@@ -1,0 +1,20 @@
+{
+  "schema_version": 1,
+  "topic": "LLM Agent 自身执行失败诊断",
+  "objective": "建立近期工作地图与可核查的阅读顺序",
+  "start_date": "2025-01-01",
+  "end_date": "2026-09-20",
+  "date_basis": "first_public",
+  "requirements": [
+    {"id": "R1", "description": "研究对象是 LLM Agent 自身执行失败，而非只用 Agent 诊断其他系统", "hard": true},
+    {"id": "R2", "description": "提出失败定位、归因或诊断的方法，并提供评测证据", "hard": true}
+  ],
+  "preferences": ["已正式发表", "代码或数据可获取"],
+  "exclusions": ["仅讨论云系统故障且未诊断 Agent 自身失败"],
+  "queries": [
+    {"id": "S2-relevance", "provider": "s2", "mode": "relevance", "query": "LLM agent failure diagnosis", "limit": 20},
+    {"id": "S2-recent", "provider": "s2", "mode": "bulk", "query": "agent + (debugging | \"failure diagnosis\")", "sort": "publicationDate:desc", "limit": 20},
+    {"id": "arxiv-recent", "provider": "arxiv", "query": "(ti:agent OR abs:agent) AND (abs:debugging OR abs:\"failure diagnosis\")", "sort": "submittedDate", "limit": 20}
+  ],
+  "coverage_requirements": ["keyword_search", "citation_search", "venue_scan", "recent_preprints", "seed_check"]
+}
