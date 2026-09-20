@@ -1,10 +1,10 @@
 # Validation record
 
-Date: 2026-09-20. Target release: v0.2.0.
+Date: 2026-09-20. Runtime validation: v0.2.0; packaging release: v0.2.1.
 
 ## What was actually exercised
 
-- Python 3.9.6 locally; standard library runtime. The repository also defines CI for Python 3.9/3.11/3.13; a local run alone does not establish remote CI success.
+- Python 3.9.6 locally; standard library runtime. An inactive CI example targets Python 3.9/3.11/3.13. The current GitHub credential lacks workflow scope, so Actions is not enabled and no remote CI pass is claimed.
 - 29 deterministic regression cases before release preparation, including the release-check/source-drift gate. The final release check log is stored in `iterations/evidence-gates/tests.txt`.
 - The standard skill frontmatter validator passed; command help and bundled local documentation links were checked.
 - A real Semantic Scholar authenticated paper read succeeded using a local environment key. No key value is included in this repository.

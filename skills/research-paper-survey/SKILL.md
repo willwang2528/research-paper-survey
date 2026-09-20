@@ -2,7 +2,7 @@
 name: research-paper-survey
 description: 调研一个领域的近期论文、建立研究地图和阅读计划，并逐篇提供需求符合性证据。用于领域 paper survey、recent work、文献检索与筛选、论文阅读路线、检索报告更新，以及研究和迭代该 SOP；不用于仅摘要单篇论文。支持 Semantic Scholar、arXiv、OpenAlex 脚本检索及人工来源导入。
 metadata:
-  version: "0.2.0"
+  version: "0.2.1"
 ---
 
 # Research Paper Survey

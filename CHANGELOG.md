@@ -1,5 +1,10 @@
 # Changelog
 
+## 0.2.1 — 2026-09-20
+
+- 将需额外GitHub授权的Actions配置保留为未启用示例，本地回归与运行能力不变
+- 验证记录：[iterations/ci-portability](iterations/ci-portability/plan.json)。回归通过不代表研究召回率已测量。
+
 ## 0.2.0 — 2026-09-20
 
 - 绑定需求与覆盖指纹，修复证据类型检查、异常分页保留及最新失败重试；补齐独立使用验证和迁移说明

@@ -1,0 +1,9 @@
+{
+  "id": "ci-portability",
+  "created_at": "2026-09-20T08:01:08.927505+00:00",
+  "baseline_version": "0.2.0",
+  "problem": "GitHub rejected the atomic push because the current OAuth credential lacks workflow scope; SSH was unavailable",
+  "proposal": "Keep CI as an inactive example and deliver skill/runtime with local regression gates unchanged",
+  "status": "released_locally",
+  "method_effectiveness": "Not measured by regression tests; document separately when applicable"
+}

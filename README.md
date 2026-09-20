@@ -105,3 +105,5 @@ python3 skills/research-paper-survey/scripts/survey.py --help
 ```
 
 单元测试采用合成记录与外部 HTTP 边界夹具，不需要真实 key；网络 smoke 单独运行。本次发布的实际验证和限制见 [validation](validation/)。
+
+CI 配置保留在 [ci/github-actions.example.yml](ci/github-actions.example.yml)。当前 GitHub 凭据无 `workflow` 权限，因此未启用远端 Actions；未来具备相应权限时可将此示例放入 `.github/workflows/test.yml`。本地回归和版本发布检查不依赖 Actions。

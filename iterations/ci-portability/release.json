@@ -1,0 +1,9 @@
+{
+  "released_at": "2026-09-20T08:01:09.276313+00:00",
+  "previous_version": "0.2.0",
+  "version": "0.2.1",
+  "summary": "将需额外GitHub授权的Actions配置保留为未启用示例，本地回归与运行能力不变",
+  "validated_source_digest": "7e4183764b94f35b58778ef0f938a47545e2075498933c2fd942bfa0f9b57ca4",
+  "released_source_digest": "f8b6fe5d17e16dc9f93355574c4157079d6fc4aa39eebbe1598bcbc37f8a1353",
+  "publication": "local files only; commit/tag/push remain separate authorized operations"
+}
