@@ -38,6 +38,7 @@ class SurveyTests(unittest.TestCase):
               'evidence': 'We study tool-using LLM agents and attribute failures.',
               'rationale': 'The evaluated system is an LLM agent.', 'verdict': 'yes'}
         return {'work_id': work_id, 'decision': 'core', 'reason': 'Direct match',
+                'scope_fingerprint': self.core.scope_fingerprint(self.core.read_json(self.run / 'protocol.json')),
                 'reviewer': 'fixture-reviewer', 'reviewed_at': '2026-09-20',
                 'identity': {'verified': True, 'source_url': 'https://example.org/paper'},
                 'fulltext': {'reviewed': True, 'source_url': 'https://example.org/paper', 'version': 'v1'},
@@ -122,6 +123,57 @@ class SurveyTests(unittest.TestCase):
         self.assertIn('A controlled study', text)
         self.assertIn('pending', text)
 
+    def test_null_and_nonstring_evidence_cannot_pass(self):
+        wid = self.seed()
+        for invalid in (None, False, [], {}, 123):
+            r = self.review(wid)
+            r['requirements']['R1']['evidence'] = invalid
+            r['claims'][0]['locator'] = invalid
+            self.core.write_jsonl(self.run / 'reviews.jsonl', [r])
+            errors = self.core.audit_run(self.run)['errors']
+            self.assertTrue(any('R1' in e for e in errors), invalid)
+            self.assertTrue(any('claim' in e for e in errors), invalid)
+
+    def test_scope_change_invalidates_old_review_and_coverage(self):
+        wid = self.seed()
+        self.core.write_jsonl(self.run / 'reviews.jsonl', [self.review(wid)])
+        p = self.core.read_json(self.run / 'protocol.json')
+        p['requirements'][0]['description'] = 'Actually only randomized clinical trials'
+        self.core.write_json(self.run / 'protocol.json', p)
+        errors = self.core.audit_run(self.run)['errors']
+        self.assertTrue(any('scope fingerprint' in e for e in errors))
+        self.assertTrue(any('coverage: protocol fingerprint' in e for e in errors))
+
+    def test_unexecuted_planned_query_blocks_audit(self):
+        p = self.core.read_json(self.run / 'protocol.json')
+        p['queries'] = [{'id': 'never-run', 'provider': 's2', 'query': 'agents', 'limit': 1}]
+        self.core.write_json(self.run / 'protocol.json', p)
+        errors = self.core.audit_run(self.run)['errors']
+        self.assertTrue(any('never-run' in e for e in errors))
+
+    def test_latest_failure_is_retried_after_historical_success(self):
+        p = self.core.read_json(self.run / 'protocol.json')
+        p['queries'] = [{'id': 'Q1', 'provider': 's2', 'query': 'agents', 'limit': 1}]
+        self.core.write_json(self.run / 'protocol.json', p)
+        good = ([self.paper()], {'status': 'ok', 'truncated': False})
+        bad = ([], {'status': 'failed', 'truncated': True, 'error': 'fixture failure'})
+        with patch.object(self.core, 'search_s2', side_effect=[good, bad, good]):
+            self.core.search_run(self.run, {})
+            self.core.search_run(self.run, {}, refresh=True)
+            result = self.core.search_run(self.run, {})
+        self.assertEqual(result['searched'], 1)
+        self.assertEqual(result['failed'], 0)
+
+    def test_prepare_does_not_overwrite_existing_reviews(self):
+        wid = self.seed()
+        review = self.review(wid)
+        self.core.write_jsonl(self.run / 'reviews.jsonl', [review])
+        before = (self.run / 'reviews.jsonl').read_bytes()
+        data = self.core.prepare_run(self.run)
+        self.assertEqual((self.run / 'reviews.jsonl').read_bytes(), before)
+        self.assertEqual(data['unreviewed'], 0)
+        self.assertTrue((self.run / 'coverage_template.json').exists())
+
     def test_env_file_is_data_not_shell_and_environment_wins(self):
         path = Path(self.tmp.name) / 'keys.env'
         marker = Path(self.tmp.name) / 'should-not-exist'
@@ -178,6 +230,17 @@ class ProviderTests(unittest.TestCase):
         self.assertNotIn('limit', h.calls[0][1])
         self.assertFalse(meta['truncated'])
 
+    def test_malformed_later_page_preserves_previous_records(self):
+        class FixtureHTTP:
+            def __init__(self): self.n = 0
+            def get(self, url, params, provider):
+                self.n += 1
+                return {'total': 2, 'next': 1, 'data': [{'paperId': 'valid', 'title': 'Retain me'}]} if self.n == 1 else {'total': 2, 'data': [None]}
+        rows, meta = self.p.search_s2(FixtureHTTP(), {'query': 'agents', 'limit': 5}, 2025, 2026)
+        self.assertEqual(len(rows), 1)
+        self.assertEqual(rows[0]['title'], 'Retain me')
+        self.assertEqual(meta['status'], 'partial')
+
     def test_arxiv_retains_first_public_and_version_date(self):
         xml = b'''<feed xmlns="http://www.w3.org/2005/Atom" xmlns:o="http://a9.com/-/spec/opensearch/1.1/">
         <o:totalResults>1</o:totalResults><entry><id>http://arxiv.org/abs/2501.00001v2</id>
@@ -205,6 +268,23 @@ class ProviderTests(unittest.TestCase):
             self.assertNotIn(secret, str(raised.exception))
             for f in Path(t).rglob('*'):
                 if f.is_file(): self.assertNotIn(secret, f.read_text(errors='replace'))
+
+    def test_openalex_bad_second_page_keeps_first_page(self):
+        class FixtureHTTP:
+            def __init__(self): self.n = 0
+            def get(self, url, params, provider):
+                self.n += 1
+                return {'meta': {'count': 2, 'next_cursor': 'next'}, 'results': [{'id': 'https://openalex.org/W1', 'title': 'Keep this'}]} if self.n == 1 else {'meta': {'count': 2}, 'results': [None]}
+        rows, meta = self.p.search_openalex(FixtureHTTP(), {'query': 'agents', 'limit': 5}, 2025, 2026)
+        self.assertEqual(len(rows), 1)
+        self.assertEqual(meta['status'], 'partial')
+
+    def test_arxiv_invalid_total_is_failed_not_zero_results(self):
+        class FixtureHTTP:
+            def get(self, url, params, provider):
+                return b'<feed xmlns="http://www.w3.org/2005/Atom" xmlns:o="http://a9.com/-/spec/opensearch/1.1/"><o:totalResults>bad</o:totalResults></feed>'
+        _, meta = self.p.search_arxiv(FixtureHTTP(), {'query': 'agent', 'limit': 1}, 2025, 2026)
+        self.assertEqual(meta['status'], 'failed')
 
     def test_retry_429_then_success(self):
         class Response:

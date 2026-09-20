@@ -2,7 +2,7 @@
 name: research-paper-survey
 description: 调研一个领域的近期论文、建立研究地图和阅读计划，并逐篇提供需求符合性证据。用于领域 paper survey、recent work、文献检索与筛选、论文阅读路线、检索报告更新，以及研究和迭代该 SOP；不用于仅摘要单篇论文。支持 Semantic Scholar、arXiv、OpenAlex 脚本检索及人工来源导入。
 metadata:
-  version: "0.1.0"
+  version: "0.2.0"
 ---
 
 # Research Paper Survey
@@ -67,7 +67,17 @@ python3 <skill_dir>/scripts/survey.py import --run <run> --input records.json --
 
 先核对 DOI/arXiv 等标识符，保留所有来源。标题相似只生成查重线索。自动归并后仍需核对预印本、会议版、期刊扩展版差异。
 
-摘要初筛只排除明确不符合者。读核心候选全文，填写 `reviews.jsonl`：身份来源、所读版本、日期依据、每个硬条件的 `yes/no/unclear` 与证据、主要主张与限制、决定理由、核验者和日期。
+检索/导入后，或需求协议变化后，先生成当前验收模板：
+
+```sh
+python3 <skill_dir>/scripts/survey.py prepare --run <run>
+```
+
+命令生成 `review_queue.jsonl` 和 `coverage_template.json`，返回当前 scope/protocol 两个 fingerprint，不覆写 `reviews.jsonl` 或 `coverage.json`。队列列出未评审或范围指纹过期的条目；同一范围内已有 pending 仍需继续处理，队列为空不代表审查结束。
+
+摘要初筛只排除明确不符合者。以队列模板读核心候选全文，再将验收结果合并进 `reviews.jsonl`，每个 work 保留一条当前记录：身份来源、所读版本、日期依据、每个硬条件的 `yes/no/unclear` 与证据、主要主张与限制、决定理由、核验者和日期。
+
+所有决定（含 background/excluded/pending）必须携带当前 `scope_fingerprint`；范围不含 queries/coverage_requirements。需求变化后重核所有受影响决定，不能只改 hash 求通过。覆盖验收携带整个协议的 `protocol_fingerprint`；修改查询或覆盖计划也会使旧覆盖记录过期。旧 run 缺少这些字段时先 prepare，再真实复核后迁移。
 
 只有以下都满足，才能写 `decision: core`：
 
@@ -82,7 +92,7 @@ python3 <skill_dir>/scripts/survey.py import --run <run> --input records.json --
 
 ## 5. 综合与交付
 
-更新 `coverage.json`，记录每项检查的证据、缺口与停止原因。然后运行：
+依据 `coverage_template.json` 更新 `coverage.json`，记录每项检查的证据、缺口与停止原因，并在实际重核后采用当前协议指纹。然后运行：
 
 ```sh
 python3 <skill_dir>/scripts/survey.py audit --run <run>
@@ -90,7 +100,7 @@ python3 <skill_dir>/scripts/survey.py report --run <run>
 python3 <skill_dir>/scripts/survey.py report --run <run> --strict
 ```
 
-普通报告允许诚实草稿；strict 是发布前结构门禁，要求消除未审条目、pending、未完成覆盖和检索失败等阻塞。不要为通过门禁把未知改成 yes，或删掉失败记录。
+普通报告允许诚实草稿；strict 是发布前结构门禁，要求消除未审条目、pending、指纹过期、未完成覆盖和检索失败等阻塞，并要求当前每条计划查询有匹配参数的最新成功日志。同一查询指纹重试成功可覆盖先前失败状态，但保留历史。不要为通过门禁把未知改成 yes，或删掉失败记录。
 
 脚本报告之后，agent 必须补充 `synthesis.md`：按“子问题 × 方法路线 × 假设 × 证据 × 局限”比较，给出阅读顺序、关键对照和未决问题；所有主张连接逐篇证据。再人工抽查链接和全部核心结论。不要声称脚本自动完成了这些工作。
 
@@ -106,4 +116,4 @@ python3 <skill_dir>/scripts/survey.py feedback --run <run> --category "retrieval
 
 自迭代是有证据的维护闭环：运行反馈 → 复现问题 → candidate 分支 → 修改 → 回归与方法评估 → 版本和 CHANGELOG → 发布。脚本不会自动改写、安装或发布自身。发现一次漏检不代表可以宣称整体召回率提高；在用来调参的种子上改善，要用独立集合检查。
 
-修改 SOP 时同时检查脚本契约、模板、文档和测试一致性。按 [evolution.md](references/evolution.md) 记录基线、改动理由、验证结果与未解决限制。版本变化必须能映射到 commit 和运行记录，旧报告保留当时版本和证据，不静默覆盖。
+仓库维护者使用 `<repo>/scripts/evolve.py new/check/release` 记录提案、执行回归和更新本地版本；它不会 commit/tag/push。具体参数见 [evolution.md](references/evolution.md)。修改 SOP 时同时检查脚本契约、模板、文档和测试一致性。版本变化必须能映射到 commit 和运行记录，旧报告保留当时版本和证据，不静默覆盖。

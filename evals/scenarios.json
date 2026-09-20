@@ -1,0 +1,22 @@
+{
+  "skill_name": "research-paper-survey",
+  "evals": [
+    {
+      "id": "scope-and-evidence",
+      "prompt": "使用 skill 对 fixtures 中的三条合成候选做一次离线演练：调研 2025 年至 2026-09-20 的 LLM Agent 自身失败诊断。允许预印本，CCF A/B 只是偏好。根据提供材料创建 run、导入、逐篇判断并生成诚实报告；不联网、不编造缺失全文或覆盖。",
+      "files": ["evals/fixtures/records.json", "evals/fixtures/evidence.md"],
+      "expected_output": "明确不同研究对象；不把高评级替代需求匹配；无全文候选待核验；未做完整检索的报告保留覆盖限制；保存可审计产物。"
+    },
+    {
+      "id": "protocol-change",
+      "prompt": "沿用一个已核验 run，将研究对象改为云故障诊断。更新报告并解释旧验收是否还能复用。",
+      "expected_output": "识别 scope 变化，重新核验受影响判断及覆盖；不只更换 fingerprint 使旧结论通过。"
+    },
+    {
+      "id": "recent-preprints",
+      "prompt": "调研最近三个月工作，不要因为引用少排除新预印本。按平台查询语法设计搜索和补查，说明首发与更新的区别。",
+      "expected_output": "多条查询及近期入口，明确日期口径和发表状态；没有真实执行时不编造命中数。"
+    }
+  ],
+  "note": "Scenario prompts are not a validated research-quality benchmark. Record actual executions separately."
+}

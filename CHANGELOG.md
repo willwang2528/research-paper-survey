@@ -1,5 +1,10 @@
 # Changelog
 
+## 0.2.0 — 2026-09-20
+
+- 绑定需求与覆盖指纹，修复证据类型检查、异常分页保留及最新失败重试；补齐独立使用验证和迁移说明
+- 验证记录：[iterations/evidence-gates](iterations/evidence-gates/plan.json)。回归通过不代表研究召回率已测量。
+
 按 SemVer 记录可追溯改动；版本提升不等于研究质量已改善。
 
 ## 0.1.0 — 2026-09-20

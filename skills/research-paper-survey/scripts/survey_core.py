@@ -124,6 +124,14 @@ def fingerprint(value):
     return hashlib.sha256(json.dumps(value, ensure_ascii=False, sort_keys=True).encode()).hexdigest()
 
 
+def scope_fingerprint(protocol):
+    return fingerprint({k: v for k, v in protocol.items() if k not in ('queries', 'coverage_requirements')})
+
+
+def query_fingerprint(protocol, query):
+    return fingerprint({'query': query, 'start': protocol['start_date'], 'end': protocol['end_date'], 'version': VERSION})
+
+
 def init_run(out, topic, start, end):
     out = Path(out)
     protocol = {'schema_version': 1, 'topic': topic, 'objective': '建立近期研究地图与证据可查的阅读计划',
@@ -137,7 +145,7 @@ def init_run(out, topic, start, end):
     (out / 'raw').mkdir()
     write_json(out / 'protocol.json', protocol)
     write_json(out / 'run.json', {'schema_version': 1, 'run_id': uuid.uuid4().hex, 'created_at': now(), 'skill_version': VERSION})
-    write_json(out / 'coverage.json', {'checks': [{'id': k, 'status': 'pending', 'evidence': '', 'reason': ''}
+    write_json(out / 'coverage.json', {'protocol_fingerprint': fingerprint(protocol), 'checks': [{'id': k, 'status': 'pending', 'evidence': '', 'reason': ''}
                                                for k in protocol['coverage_requirements']], 'limitations': []})
     for f in ('papers.jsonl', 'reviews.jsonl', 'search_log.jsonl', 'feedback.jsonl'):
         (out / f).touch()
@@ -224,8 +232,9 @@ def search_run(run, credentials, refresh=False):
     http = HTTPClient(run / 'raw', credentials)
     failed, skipped, searched = 0, 0, 0
     for q in p['queries']:
-        sig = fingerprint({'query': q, 'start': p['start_date'], 'end': p['end_date'], 'version': VERSION})
-        if not refresh and any(h.get('fingerprint') == sig and h.get('status') == 'ok' for h in history):
+        sig = query_fingerprint(p, q)
+        last = next((h for h in reversed(history) if h.get('fingerprint') == sig), {})
+        if not refresh and last.get('status') == 'ok':
             skipped += 1
             continue
         before = len(http.artifacts)
@@ -271,9 +280,37 @@ def valid_url(value):
     return p.scheme in ('http', 'https') and bool(p.hostname)
 
 
+def nonempty_text(value):
+    return isinstance(value, str) and bool(value.strip())
+
+
 def evidence_present(ev):
     return (isinstance(ev, dict) and valid_url(ev.get('source_url'))
-            and bool(str(ev.get('locator', '')).strip()) and bool(str(ev.get('evidence', '')).strip()))
+            and nonempty_text(ev.get('locator')) and nonempty_text(ev.get('evidence')))
+
+
+def prepare_run(run):
+    run = Path(run)
+    p = validate_protocol(read_json(run / 'protocol.json'))
+    reviews = {r.get('work_id'): r for r in read_jsonl(run / 'reviews.jsonl')}
+    scope = scope_fingerprint(p)
+    queue = []
+    for paper in read_jsonl(run / 'papers.jsonl'):
+        old = reviews.get(paper['work_id'])
+        if old and old.get('scope_fingerprint') == scope:
+            continue
+        queue.append({'work_id': paper['work_id'], 'scope_fingerprint': scope, 'decision': 'pending',
+                      'reason': 'Requires original-source review', 'reviewer': '', 'reviewed_at': '',
+                      'identity': {'verified': False, 'source_url': ''},
+                      'fulltext': {'reviewed': False, 'source_url': '', 'version': ''},
+                      'date_evidence': {'basis': p['date_basis'], 'date': '', 'source_url': '', 'locator': ''},
+                      'requirements': {r['id']: {'verdict': 'unclear', 'source_url': '', 'locator': '', 'evidence': '', 'rationale': ''} for r in p['requirements']},
+                      'claims': [], 'limitations': [], 'reading_priority': '', 'reading_reason': ''})
+    write_jsonl(run / 'review_queue.jsonl', queue)
+    write_json(run / 'coverage_template.json', {'protocol_fingerprint': fingerprint(p),
+               'checks': [{'id': c, 'status': 'pending', 'evidence': '', 'reason': ''} for c in p['coverage_requirements']], 'limitations': []})
+    return {'unreviewed': len(queue), 'scope_fingerprint': scope, 'protocol_fingerprint': fingerprint(p),
+            'note': 'Queue/templates only; existing reviews and coverage were not overwritten. Re-evaluate before updating fingerprints.'}
 
 
 def audit_run(run):
@@ -295,30 +332,32 @@ def audit_run(run):
         if decision not in ('core', 'background', 'excluded', 'pending'):
             errors.append('%s: invalid decision' % wid)
         if decision == 'pending': errors.append('%s: pending review' % wid)
-        if not all(r.get(k) for k in ('reason', 'reviewer', 'reviewed_at')):
+        if not all(nonempty_text(r.get(k)) for k in ('reason', 'reviewer', 'reviewed_at')):
             errors.append('%s: reason/reviewer/reviewed_at required' % wid)
+        if r.get('scope_fingerprint') != scope_fingerprint(p):
+            errors.append('%s: scope fingerprint changed or missing; re-review required' % wid)
         if decision != 'core': continue
         identity = r.get('identity') or {}
         fulltext = r.get('fulltext') or {}
         if identity.get('verified') is not True or not valid_url(identity.get('source_url')):
             errors.append('%s: identity evidence missing' % wid)
-        if fulltext.get('reviewed') is not True or not valid_url(fulltext.get('source_url')) or not fulltext.get('version'):
+        if fulltext.get('reviewed') is not True or not valid_url(fulltext.get('source_url')) or not nonempty_text(fulltext.get('version')):
             errors.append('%s: fulltext review/version missing' % wid)
         requirements = r.get('requirements') or {}
         for req in p['requirements']:
             if req['hard']:
                 e = requirements.get(req['id'], {})
-                if e.get('verdict') != 'yes' or not evidence_present(e) or not e.get('rationale'):
+                if e.get('verdict') != 'yes' or not evidence_present(e) or not nonempty_text(e.get('rationale')):
                     errors.append('%s: %s not supported as yes' % (wid, req['id']))
         de = r.get('date_evidence') or {}
         try:
             actual = date.fromisoformat(de.get('date', ''))
             date_ok = date.fromisoformat(p['start_date']) <= actual <= date.fromisoformat(p['end_date'])
         except (TypeError, ValueError): date_ok = False
-        if not date_ok or de.get('basis') != p['date_basis'] or not valid_url(de.get('source_url')) or not de.get('locator'):
+        if not date_ok or de.get('basis') != p['date_basis'] or not valid_url(de.get('source_url')) or not nonempty_text(de.get('locator')):
             errors.append('%s: date basis/window evidence missing or mismatched' % wid)
         claims = r.get('claims') or []
-        if not claims or any(not evidence_present(c) or not c.get('text') for c in claims):
+        if not claims or any(not evidence_present(c) or not nonempty_text(c.get('text')) for c in claims):
             errors.append('%s: claim evidence missing' % wid)
         paper = next((x for x in papers if x['work_id'] == wid), {})
         if paper.get('identifier_conflicts'):
@@ -327,16 +366,21 @@ def audit_run(run):
     for wid in sorted(missing): errors.append('%s: unreviewed paper' % wid)
     counts['pending'] += len(missing)
     coverage = read_json(run / 'coverage.json')
+    if coverage.get('protocol_fingerprint') != fingerprint(p):
+        errors.append('coverage: protocol fingerprint changed or missing; recheck coverage')
     checks = {c['id']: c for c in coverage.get('checks', [])}
     if len(checks) != len(coverage.get('checks', [])): errors.append('coverage: duplicate check IDs')
     for cid in p['coverage_requirements']:
         check = checks.get(cid, {})
-        if not (check.get('status') == 'done' and check.get('evidence')) and not (check.get('status') == 'not_applicable' and check.get('reason')):
+        if not (check.get('status') == 'done' and nonempty_text(check.get('evidence'))) and not (check.get('status') == 'not_applicable' and nonempty_text(check.get('reason'))):
             errors.append('coverage: %s unresolved' % cid)
     logs = read_jsonl(run / 'search_log.jsonl')
     # Latest attempt for the same fingerprint supersedes a recovered API failure.
     latest = {}
     for i, log in enumerate(logs): latest[log.get('fingerprint', str(i))] = log
+    for q in p['queries']:
+        if latest.get(query_fingerprint(p, q), {}).get('status') != 'ok':
+            errors.append('search: current planned query %s not successfully executed' % q['id'])
     for log in latest.values():
         if log.get('status') in ('failed', 'partial'):
             errors.append('search: unresolved failure for %s' % log.get('query_id', log.get('kind')))

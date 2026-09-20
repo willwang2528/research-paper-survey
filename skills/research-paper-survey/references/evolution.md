@@ -1,12 +1,12 @@
 # 带证据的自迭代与版本管理
 
-当前版本：0.1.0。自迭代指持续记录运行反馈、形成可检验改进并发布新版本；不是脚本自动重写自身、自动放宽纳入标准或自动推送。用户要求研究 SOP 时，应以这些记录开展方法研究。
+当前版本见仓库 VERSION、skill 内 VERSION 和 SKILL.md metadata。自迭代指持续记录运行反馈、形成可检验改进并发布新版本；不是脚本自动重写自身、自动放宽纳入标准或自动推送。用户要求研究 SOP 时，应以这些记录开展方法研究。
 
 ## 版本对象
 
 区分三个对象：skill 发布版本、数据 schema_version、单次调研协议版本。
 
-- 发布版本：仓库 `VERSION`、SKILL metadata.version、CHANGELOG 对齐；发布用相同版本 Git tag。
+- 发布版本：仓库 `VERSION`、skill 内 `VERSION`、SKILL metadata.version、CHANGELOG 对齐；发布用相同版本 Git tag。reference 不硬编码“当前版本”，避免发布后失配。
 - schema_version：运行文件结构发生不兼容变化时提升，并提供迁移说明/工具。不能用升 skill 版本掩盖旧数据读不懂的问题。
 - 协议版本：某调研问题的条件或范围变化，记录在该 run 的协议修订记录；不必因此升级通用 skill。
 
@@ -22,6 +22,26 @@
 6. 运行回归与方法评估，比较相同输入上的基线和候选；记录失败、成本及边界。
 7. 更新契约、模板、帮助、测试、VERSION、SKILL metadata 和 CHANGELOG；审查无凭据或私有运行数据。
 8. 按当前用户授权提交/推送/发布。没有发布授权时交付可审查 diff，不自行公开数据。
+
+## 仓库维护命令
+
+这些命令在完整仓库中可用；仅安装 skill 目录时需回到原仓库维护。`<repo>` 为仓库根，iteration ID 使用小写字母、数字、连字符，下面版本号必须换成大于当前版本的目标版本。
+
+```sh
+python3 <repo>/scripts/evolve.py new --id scope-review-gate --problem "协议修改后旧验收可能被误用" --proposal "将评审和覆盖证据绑定当前协议指纹"
+python3 <repo>/scripts/evolve.py check --id scope-review-gate
+python3 <repo>/scripts/evolve.py release --id scope-review-gate --version <next-version> --summary "记录具体变化与旧运行迁移要求"
+```
+
+new 写 `iterations/<id>/plan.json`，不实施提案。check 执行 unittest 回归，保存 tests.txt/check.json，检查三处版本一致，记录源码摘要及测试期间是否变化。check 之后修改源码需要重新 check。release 仅在最近检查通过且源码摘要未改变时更新两处 VERSION、SKILL metadata 和 CHANGELOG，并留下 release.json；同一 iteration 不能重复发布，不自动 commit/tag/push/install。
+
+回归通过不证明真实研究质量提升。方法效果仍需补独立种子/标注集、原文支持、成本等研究证据。脚本不会自动评判该证据的科学充分性。
+
+## 指纹门禁的迁移说明
+
+从 0.1.x 运行记录迁移到 0.2.0 的新增字段属于 schema 1 的加法扩展，但验收要求更严格：所有 review 需要 scope_fingerprint，coverage 需要 protocol_fingerprint。旧文件可读取不代表旧验收可直接复用。
+
+先对旧 run 运行 prepare，不覆盖原评审；根据当前需求重核 core/background/excluded/pending，更新相应证据与范围指纹；按完整协议重核覆盖并更新协议指纹。缺全文、未确定的条件继续 pending。查询指纹包含工具版本，升级后按 audit 提示重新执行当前计划查询。禁止只复制新 hash 使旧记录通过。
 
 ## 可检验的评估维度
 

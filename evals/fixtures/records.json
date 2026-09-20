@@ -1,0 +1,5 @@
+[
+  {"title":"SYNTHETIC A: Tracing tool-agent failures","ids":{"doi":"10.0000/fixture-a"},"authors":["Fixture Author"],"year":2025,"url":"https://example.org/fixture-a","abstract":"Diagnose failures in a tool-using LLM agent."},
+  {"title":"SYNTHETIC B: Cloud incident diagnosis with agents","ids":{"doi":"10.0000/fixture-b"},"authors":["Fixture Author"],"year":2025,"url":"https://example.org/fixture-b","abstract":"Use an agent to diagnose cloud service incidents."},
+  {"title":"SYNTHETIC C: Agent failure localization","ids":{"doi":"10.0000/fixture-c"},"authors":["Fixture Author"],"year":2026,"url":"https://example.org/fixture-c","abstract":"We locate failures of LLM agents. Full text unavailable."}
+]

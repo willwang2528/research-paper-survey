@@ -1,0 +1,9 @@
+{
+  "id": "evidence-gates",
+  "created_at": "2026-09-20T07:53:33.477830+00:00",
+  "baseline_version": "0.1.0",
+  "problem": "Independent review reproduced stale-protocol acceptance, null evidence acceptance, partial-page loss and historical-success retry blocking",
+  "proposal": "Bind reviews and coverage to protocol scope; enforce nonempty text; preserve partial pages; use latest attempt; add regression cases",
+  "status": "released_locally",
+  "method_effectiveness": "Not measured by regression tests; document separately when applicable"
+}

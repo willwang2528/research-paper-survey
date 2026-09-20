@@ -88,6 +88,8 @@ def result(rows, total, more, error=None, retrieved=None):
 
 
 def normalize_s2(p):
+    if not isinstance(p, dict) or not isinstance(p.get('paperId'), str) or not p.get('paperId') or not isinstance(p.get('title'), str) or not p['title'].strip():
+        raise ProviderError('s2: malformed paper record (id/title required)')
     ids = {'s2': p.get('paperId')}
     ext = p.get('externalIds') or {}
     ids.update(doi=ext.get('DOI'), arxiv=ext.get('ArXiv'))
@@ -131,7 +133,11 @@ def search_s2(http, query, start_year, end_year):
         total = data.get('total')
         batch = data['data']
         retrieved += len(batch)
-        rows.extend(normalize_s2(p) for p in batch[:limit - len(rows)])
+        try:
+            for paper in batch[:limit - len(rows)]:
+                rows.append(normalize_s2(paper))
+        except (ProviderError, AttributeError, TypeError, ValueError):
+            return result(rows, total, True, 's2: malformed paper record', retrieved)
         cursor = data.get('token' if mode == 'bulk' else 'next')
         more = cursor is not None or retrieved > len(rows)
         if cursor is None:
@@ -157,10 +163,13 @@ def snowball_s2(http, paper_id, direction, limit):
             return result(rows, None, True, str(exc))
         if not isinstance(d, dict) or not isinstance(d.get('data'), list):
             return result(rows, None, True, 's2: invalid citation envelope')
-        for edge in d['data']:
-            p = edge.get('citedPaper' if direction == 'references' else 'citingPaper')
-            if p and p.get('paperId'):
-                rows.append(normalize_s2(p))
+        try:
+            for edge in d['data']:
+                p = edge.get('citedPaper' if direction == 'references' else 'citingPaper')
+                if p and p.get('paperId'):
+                    rows.append(normalize_s2(p))
+        except (ProviderError, AttributeError, TypeError, ValueError):
+            return result(rows, None, True, 's2: malformed citation record')
         cursor = d.get('next')
         more = cursor is not None
         if not more:
@@ -189,13 +198,18 @@ def search_arxiv(http, query, start_year, end_year):
         except (ProviderError, ET.ParseError) as exc:
             return result(rows, total, True, str(exc) if isinstance(exc, ProviderError) else 'arxiv: invalid XML')
         entries = root.findall('a:entry', ns)
-        total = int(root.findtext('o:totalResults', '0', ns))
+        try:
+            total = int(root.findtext('o:totalResults', '', ns))
+        except (TypeError, ValueError):
+            return result(rows, total, True, 'arxiv: missing or invalid totalResults')
         for e in entries:
             url = e.findtext('a:id', '', ns)
             if '/api/errors' in url:
                 return result(rows, total, True, 'arxiv: API error entry')
             arxiv_id = url.split('/abs/')[-1]
             pub = e.findtext('a:published', '', ns)[:10]
+            if '/abs/' not in url or not re.fullmatch(r'\d{4}-\d{2}-\d{2}', pub) or not e.findtext('a:title', '', ns).strip():
+                return result(rows, total, True, 'arxiv: malformed paper entry')
             links = e.findall('a:link', ns)
             rows.append({'ids': {'arxiv': arxiv_id, **({'doi': e.findtext('x:doi', '', ns)} if e.findtext('x:doi', '', ns) else {})},
                          'title': ' '.join(e.findtext('a:title', '', ns).split()),
@@ -208,6 +222,20 @@ def search_arxiv(http, query, start_year, end_year):
         if not entries or len(rows) >= total:
             break
     return result(rows, total, len(rows) < (total or 0))
+
+
+def normalize_openalex(p):
+    if not isinstance(p, dict) or not isinstance(p.get('id'), str) or not p['id'] or not isinstance(p.get('title'), str) or not p['title'].strip():
+        raise ProviderError('openalex: malformed work')
+    loc = p.get('primary_location') or {}
+    ids = {'openalex': p['id']}
+    if p.get('doi'): ids['doi'] = p['doi']
+    return {'ids': ids, 'title': p['title'],
+            'authors': [(a.get('author') or {}).get('display_name', '') for a in p.get('authorships') or []],
+            'abstract': None, 'abstract_inverted_index': p.get('abstract_inverted_index'),
+            'year': p.get('publication_year'), 'publication_date': p.get('publication_date'),
+            'url': loc.get('landing_page_url') or p['id'], 'open_access_pdf': loc.get('pdf_url'),
+            'venue': (loc.get('source') or {}).get('display_name'), 'metadata_source': 'openalex'}
 
 
 def search_openalex(http, query, start_year, end_year):
@@ -228,16 +256,11 @@ def search_openalex(http, query, start_year, end_year):
         if not isinstance(d, dict) or not isinstance(d.get('results'), list):
             return result(rows, total, True, 'openalex: invalid result envelope')
         total = (d.get('meta') or {}).get('count')
-        for p in d['results']:
-            loc = p.get('primary_location') or {}
-            ids = {'openalex': p['id']}
-            if p.get('doi'): ids['doi'] = p['doi']
-            rows.append({'ids': ids, 'title': p.get('title') or '',
-                         'authors': [(a.get('author') or {}).get('display_name', '') for a in p.get('authorships') or []],
-                         'abstract': None, 'abstract_inverted_index': p.get('abstract_inverted_index'),
-                         'year': p.get('publication_year'), 'publication_date': p.get('publication_date'),
-                         'url': loc.get('landing_page_url') or p['id'], 'open_access_pdf': loc.get('pdf_url'),
-                         'venue': (loc.get('source') or {}).get('display_name'), 'metadata_source': 'openalex'})
+        try:
+            for paper in d['results']:
+                rows.append(normalize_openalex(paper))
+        except (ProviderError, AttributeError, TypeError, ValueError):
+            return result(rows, total, True, 'openalex: malformed work')
         cursor = (d.get('meta') or {}).get('next_cursor')
         if not cursor or not d['results'] or len(rows) >= (total or 0):
             break

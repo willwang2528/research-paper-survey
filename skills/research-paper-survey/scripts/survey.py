@@ -7,7 +7,7 @@ import sys
 
 from providers import HTTPClient, ProviderError
 from survey_core import (VERSION, load_credentials, init_run, search_run, import_records,
-                         snowball_run, audit_run, render_report, feedback)
+                         snowball_run, audit_run, render_report, feedback, prepare_run)
 
 
 def main(argv=None):
@@ -21,7 +21,7 @@ def main(argv=None):
     init = sub.add_parser('init', help='Initialize an empty, version-stamped run')
     for flag in ('topic', 'start', 'end'): init.add_argument('--' + flag, required=True)
     init.add_argument('--out', required=True, type=Path)
-    for name in ('search', 'import', 'snowball', 'audit', 'report', 'feedback'):
+    for name in ('search', 'import', 'snowball', 'prepare', 'audit', 'report', 'feedback'):
         cmd = sub.add_parser(name)
         cmd.add_argument('--run', type=Path, required=True)
         if name == 'search': cmd.add_argument('--refresh', action='store_true')
@@ -54,6 +54,7 @@ def main(argv=None):
             out = search_run(args.run, credentials, args.refresh)
             exit_code = 1 if out['failed'] else 0
         elif args.command == 'import': out = import_records(args.run, args.input, args.source)
+        elif args.command == 'prepare': out = prepare_run(args.run)
         elif args.command == 'snowball':
             out = snowball_run(args.run, credentials, args.paper_id, args.direction, args.limit)
             exit_code = 0 if out['status'] == 'ok' else 1

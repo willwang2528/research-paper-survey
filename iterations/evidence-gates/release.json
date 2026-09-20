@@ -1,0 +1,9 @@
+{
+  "released_at": "2026-09-20T07:59:14.883917+00:00",
+  "previous_version": "0.1.0",
+  "version": "0.2.0",
+  "summary": "绑定需求与覆盖指纹，修复证据类型检查、异常分页保留及最新失败重试；补齐独立使用验证和迁移说明",
+  "validated_source_digest": "82e626abb8c4fcabe786a5ef812fbeabc58aabef05db1ef2f95c243e5866a808",
+  "released_source_digest": "ae59f6d260c500cd5de2ddf7fef65a3c7138f25d8ccbd8730ff1b5cf2b5d6cd5",
+  "publication": "local files only; commit/tag/push remain separate authorized operations"
+}
