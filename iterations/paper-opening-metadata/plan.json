@@ -1,0 +1,9 @@
+{
+  "id": "paper-opening-metadata",
+  "created_at": "2026-09-21T03:28:37.615023+00:00",
+  "baseline_version": "0.2.2",
+  "problem": "逐篇介绍缺少统一首屏信息，版本、收录与作者单位不便阅读核对",
+  "proposal": "固定英文题名、元数据行、最新版 arXiv 链接、摘要总结的顺序，并补充身份核验和缺失值规则",
+  "status": "released_locally",
+  "method_effectiveness": "Not measured by regression tests; document separately when applicable"
+}

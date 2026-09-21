@@ -1,0 +1,9 @@
+{
+  "released_at": "2026-09-21T03:28:46.132499+00:00",
+  "previous_version": "0.2.2",
+  "version": "0.2.3",
+  "summary": "固定逐篇英文题名、版本与收录元数据、全部署名单位、最新版 arXiv 链接和摘要总结；补充核验及缺失值规则。兼容展示修订，无 schema 迁移，CLI 仍为审计草稿。",
+  "validated_source_digest": "31c972e0ac668e49fc8644bac572b8ed2c07e89d50a203f4f427bd311d62bd20",
+  "released_source_digest": "310c0311e54ee3f1a77e5827b60c0eb21fd537f4a0da615fe79c25ed1946002f",
+  "publication": "local files only; commit/tag/push remain separate authorized operations"
+}
