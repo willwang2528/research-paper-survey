@@ -1,0 +1,9 @@
+{
+  "released_at": "2026-09-21T04:14:30.105035+00:00",
+  "previous_version": "0.2.6",
+  "version": "0.2.7",
+  "summary": "论文 URL 并入日期收录行首；未检索到 arXiv 时省略日期及占位文字，保留官方全文入口。仅展示修订，无 schema 迁移。",
+  "validated_source_digest": "45231ea40567b4d8bd1b5ee0506ba40281a2caac8871545b9e8d230629c6cce9",
+  "released_source_digest": "670e798b12818c3d7ae78c0ab55edd28bd5e24d90d5b1a9c8ff9b375093d23d5",
+  "publication": "local files only; commit/tag/push remain separate authorized operations"
+}

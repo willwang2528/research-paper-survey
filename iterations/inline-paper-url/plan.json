@@ -1,0 +1,9 @@
+{
+  "id": "inline-paper-url",
+  "created_at": "2026-09-21T04:14:29.742388+00:00",
+  "baseline_version": "0.2.6",
+  "problem": "独立链接行冗余，未检索到 arXiv 时日期占位误导读者",
+  "proposal": "URL 移至日期收录行首，无可核实 arXiv 时省略日期与占位文字，保留官方全文入口",
+  "status": "released_locally",
+  "method_effectiveness": "Not measured by regression tests; document separately when applicable"
+}
