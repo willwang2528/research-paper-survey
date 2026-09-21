@@ -2,7 +2,7 @@
 name: research-paper-survey
 description: 调研一个领域的近期论文、建立研究地图和阅读计划，并逐篇提供需求符合性证据。用于领域 paper survey、recent work、文献检索与筛选、论文阅读路线、检索报告更新，以及研究和迭代该 SOP；不用于仅摘要单篇论文。支持 Semantic Scholar、arXiv、OpenAlex 脚本检索及人工来源导入。
 metadata:
-  version: "0.2.3"
+  version: "0.2.4"
 ---
 
 # Research Paper Survey
@@ -108,7 +108,7 @@ python3 <skill_dir>/scripts/survey.py report --run <run> --strict
 
 脚本报告之后，agent 必须补充 `synthesis.md`：按“子问题 × 方法路线 × 假设 × 证据 × 局限”比较，给出阅读顺序、关键对照和未决问题；所有主张连接逐篇证据。再人工抽查链接和全部核心结论。不要声称脚本自动完成了这些工作。
 
-面向读者的每篇介绍必须先展示：英文完整题名首行标题 → 元数据行（arXiv 最新版日期、收录 venue/track 及适用 CCF 等级、收录年月、中文题名、所有作者署名单位去重）→ 最新版 arXiv URL → 摘要总结，再展开分析。填写及未知值规则见 [逐篇介绍模板](references/templates.md#面向读者的逐篇介绍固定开头)。这些字段由 agent 查源核验，脚本草稿不会自动补齐。
+面向读者的每篇介绍必须先展示：英文完整题名首行标题 → 精简元数据行（日期 ｜ venue/track 与适用 CCF 等级，空格接收录年月 ｜ 作者单位：去重中文名称）→ 独立无序列表项的中文题名 → 无前缀的最新版 arXiv URL → 摘要总结，再展开分析。填写及未知值规则见 [逐篇介绍模板](references/templates.md#面向读者的逐篇介绍固定开头)。这些字段由 agent 查源核验，脚本草稿不会自动补齐。
 
 最终交付包含范围、领域地图、阅读路线、逐篇证据、检索日志、排除与待核验清单、覆盖限制。明确检索记录数、独立候选数、全文审查数和四类决定数，说明哪些计数是人工补充。查询可重跑，不保证动态数据库返回相同结果。
 

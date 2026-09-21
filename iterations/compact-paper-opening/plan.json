@@ -1,0 +1,9 @@
+{
+  "id": "compact-paper-opening",
+  "created_at": "2026-09-21T03:48:00.216723+00:00",
+  "baseline_version": "0.2.3",
+  "problem": "论文开头字段标签重复，中英文单位并列和日期说明增加阅读负担",
+  "proposal": "按用户示例压缩元数据行，中文题名单列，链接无前缀；保留摘要和证据记录",
+  "status": "released_locally",
+  "method_effectiveness": "Not measured by regression tests; document separately when applicable"
+}

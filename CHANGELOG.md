@@ -1,5 +1,10 @@
 # Changelog
 
+## 0.2.4 — 2026-09-21
+
+- 精简论文开头：移除重复标签与英文单位对照，中文题名单列，会议后直接接年月，URL无前缀；保留摘要和完整核验记录。
+- 验证记录：[iterations/compact-paper-opening](iterations/compact-paper-opening/plan.json)。回归通过不代表研究召回率已测量。
+
 ## 0.2.3 — 2026-09-21
 
 - 固定逐篇英文题名、版本与收录元数据、全部署名单位、最新版 arXiv 链接和摘要总结；补充核验及缺失值规则。兼容展示修订，无 schema 迁移，CLI 仍为审计草稿。

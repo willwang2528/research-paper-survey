@@ -1,0 +1,34 @@
+test_changed_sources_invalidate_old_validation (test_evolve.EvolutionTests) ... ok
+test_iteration_id_cannot_escape_repository (test_evolve.EvolutionTests) ... ok
+test_release_requires_passing_checks (test_evolve.EvolutionTests) ... ok
+test_release_updates_versions_and_records_evidence (test_evolve.EvolutionTests) ... ok
+test_arxiv_invalid_total_is_failed_not_zero_results (test_survey.ProviderTests) ... ok
+test_arxiv_retains_first_public_and_version_date (test_survey.ProviderTests) ... ok
+test_bulk_uses_token_and_its_own_query_syntax (test_survey.ProviderTests) ... ok
+test_http_does_not_leak_key_in_failure_or_log (test_survey.ProviderTests) ... ok
+test_malformed_later_page_preserves_previous_records (test_survey.ProviderTests) ... ok
+test_openalex_bad_second_page_keeps_first_page (test_survey.ProviderTests) ... ok
+test_relevance_rejects_boolean_syntax (test_survey.ProviderTests) ... ok
+test_retry_429_then_success (test_survey.ProviderTests) ... ok
+test_s2_pagination_obeys_limit_and_reports_truncation (test_survey.ProviderTests) ... ok
+test_core_without_fulltext_is_blocked (test_survey.SurveyTests) ... ok
+test_coverage_and_unreviewed_papers_prevent_ready_status (test_survey.SurveyTests) ... ok
+test_dedupe_unifies_doi_arxiv_bridge_but_not_same_title (test_survey.SurveyTests) ... ok
+test_env_file_is_data_not_shell_and_environment_wins (test_survey.SurveyTests) ... ok
+test_import_creates_unreviewed_records_and_provenance (test_survey.SurveyTests) ... ok
+test_init_refuses_overwrite (test_survey.SurveyTests) ... ok
+test_invalid_date_window_is_rejected (test_survey.SurveyTests) ... ok
+test_latest_failure_is_retried_after_historical_success (test_survey.SurveyTests) ... ok
+test_null_and_nonstring_evidence_cannot_pass (test_survey.SurveyTests) ... ok
+test_out_of_window_and_duplicate_reviews_are_blocked (test_survey.SurveyTests) ... ok
+test_prepare_does_not_overwrite_existing_reviews (test_survey.SurveyTests) ... ok
+test_report_discloses_pending_records (test_survey.SurveyTests) ... ok
+test_scope_change_invalidates_old_review_and_coverage (test_survey.SurveyTests) ... ok
+test_structurally_complete_review_can_pass_without_claiming_truth (test_survey.SurveyTests) ... ok
+test_unexecuted_planned_query_blocks_audit (test_survey.SurveyTests) ... ok
+test_unknown_requirement_and_missing_claim_evidence_are_blocked (test_survey.SurveyTests) ... ok
+
+----------------------------------------------------------------------
+Ran 29 tests in 0.148s
+
+OK

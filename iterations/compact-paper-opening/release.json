@@ -1,0 +1,9 @@
+{
+  "released_at": "2026-09-21T03:48:09.891996+00:00",
+  "previous_version": "0.2.3",
+  "version": "0.2.4",
+  "summary": "精简论文开头：移除重复标签与英文单位对照，中文题名单列，会议后直接接年月，URL无前缀；保留摘要和完整核验记录。",
+  "validated_source_digest": "3c17e5c59809586d4945ae7295a979bc016993c73c952befa6f837481c016d2c",
+  "released_source_digest": "636ed32d9e38b1957deafbd6936bdb583238317b83e0048e52048e1b969bc715",
+  "publication": "local files only; commit/tag/push remain separate authorized operations"
+}
