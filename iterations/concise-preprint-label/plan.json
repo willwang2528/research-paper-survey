@@ -1,0 +1,9 @@
+{
+  "id": "concise-preprint-label",
+  "created_at": "2026-09-21T03:54:27.422712+00:00",
+  "baseline_version": "0.2.4",
+  "problem": "预印本展示附带未核实正式收录的重复说明",
+  "proposal": "展示仅写预印本，核验状态留在证据记录",
+  "status": "released_locally",
+  "method_effectiveness": "Not measured by regression tests; document separately when applicable"
+}

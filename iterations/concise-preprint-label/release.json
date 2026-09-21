@@ -1,0 +1,9 @@
+{
+  "released_at": "2026-09-21T03:54:27.761028+00:00",
+  "previous_version": "0.2.4",
+  "version": "0.2.5",
+  "summary": "预印本展示仅写预印本，删除未核实正式收录等后缀；核验状态保留在证据记录，筛选逻辑不变。",
+  "validated_source_digest": "0d07b9f95fd3be63f0a0b6537581ee163f5e2c8d6dfd06dc6635de5f97d7ad08",
+  "released_source_digest": "aa32858d77b914c7ece4f0cfe82707f89b1081d448c79ec57739163b4f33b56e",
+  "publication": "local files only; commit/tag/push remain separate authorized operations"
+}
