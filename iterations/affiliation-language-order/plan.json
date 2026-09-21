@@ -1,0 +1,9 @@
+{
+  "id": "affiliation-language-order",
+  "created_at": "2026-09-21T03:59:56.794626+00:00",
+  "baseline_version": "0.2.5",
+  "problem": "全部单位强制中文导致机构名称丢失，作者单位与日期挤在同一行",
+  "proposal": "中国机构中文、其他机构英文；中文题名提前，单位独占列表项",
+  "status": "released_locally",
+  "method_effectiveness": "Not measured by regression tests; document separately when applicable"
+}

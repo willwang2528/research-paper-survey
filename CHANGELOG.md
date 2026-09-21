@@ -1,5 +1,10 @@
 # Changelog
 
+## 0.2.6 — 2026-09-21
+
+- 调整论文开头顺序，作者单位独占列表项；中国机构中文、其他机构英文，保留已知署名而非中文名待核实占位符。
+- 验证记录：[iterations/affiliation-language-order](iterations/affiliation-language-order/plan.json)。回归通过不代表研究召回率已测量。
+
 ## 0.2.5 — 2026-09-21
 
 - 预印本展示仅写预印本，删除未核实正式收录等后缀；核验状态保留在证据记录，筛选逻辑不变。

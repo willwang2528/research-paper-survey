@@ -1,0 +1,9 @@
+{
+  "released_at": "2026-09-21T03:59:57.121536+00:00",
+  "previous_version": "0.2.5",
+  "version": "0.2.6",
+  "summary": "调整论文开头顺序，作者单位独占列表项；中国机构中文、其他机构英文，保留已知署名而非中文名待核实占位符。",
+  "validated_source_digest": "0f799b8f0f6ba75d5e7b79c89e14604424685da1419f62630f74da657e0f63ce",
+  "released_source_digest": "7611e1d850a2ce2a3b828db4b45e91e6e96a63c0781505a519f0725d0cdde78b",
+  "publication": "local files only; commit/tag/push remain separate authorized operations"
+}
