@@ -1,5 +1,10 @@
 # Changelog
 
+## 0.2.8 — 2026-09-24
+
+- 逐篇展示移除 arXiv URL 后的版本日期；保留日期核验记录与正式收录年月。仅展示格式变化，无 schema 或脚本行为变化。
+- 验证记录：[iterations/omit-arxiv-display-date](iterations/omit-arxiv-display-date/plan.json)。回归通过不代表研究召回率已测量。
+
 ## 0.2.7 — 2026-09-21
 
 - 论文 URL 并入日期收录行首；未检索到 arXiv 时省略日期及占位文字，保留官方全文入口。仅展示修订，无 schema 迁移。

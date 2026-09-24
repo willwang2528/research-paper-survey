@@ -1,0 +1,9 @@
+{
+  "released_at": "2026-09-24T06:24:29.925851+00:00",
+  "previous_version": "0.2.7",
+  "version": "0.2.8",
+  "summary": "逐篇展示移除 arXiv URL 后的版本日期；保留日期核验记录与正式收录年月。仅展示格式变化，无 schema 或脚本行为变化。",
+  "validated_source_digest": "378f02fcfa9f600ba589473a6ee1e0372f8c857e3d8d312fa9255ba953c0e4fb",
+  "released_source_digest": "c1a9480d00bd3ad576fa1c3215ab7ba5b9e2f171c73646596780605d49a0de6b",
+  "publication": "local files only; commit/tag/push remain separate authorized operations"
+}

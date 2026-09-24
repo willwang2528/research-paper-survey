@@ -27,7 +27,7 @@ npx skills add willwang2528/research-paper-survey --skill research-paper-survey
 
 > 使用 research-paper-survey 调研 2025 年以来的 LLM Agent 自身失败诊断。区分正式发表与预印本，每篇给出需求对应证据，最后提供研究路线比较和阅读顺序。
 
-Skill 入口：[SKILL.md](skills/research-paper-survey/SKILL.md)。逐篇介绍统一以英文题名、中文题名、URL 与日期/收录同一行、独立作者单位行（中国机构中文、其他机构英文）和摘要总结开头，详见 [展示模板](skills/research-paper-survey/references/templates.md)。方法依据、协议模板、数据契约、迭代协议按需加载。
+Skill 入口：[SKILL.md](skills/research-paper-survey/SKILL.md)。逐篇介绍统一以英文题名、中文题名、URL 与收录同一行、独立作者单位行（中国机构中文、其他机构英文）和摘要总结开头；arXiv 版本日期保留在证据记录，不接在 URL 后，详见 [展示模板](skills/research-paper-survey/references/templates.md)。方法依据、协议模板、数据契约、迭代协议按需加载。
 
 ## 脚本快速开始
 

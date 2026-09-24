@@ -1,0 +1,9 @@
+{
+  "id": "omit-arxiv-display-date",
+  "created_at": "2026-09-24T06:23:01.914169+00:00",
+  "baseline_version": "0.2.7",
+  "problem": "逐篇介绍在 arXiv URL 后重复展示具体版本日期，用户要求移除该日期",
+  "proposal": "仅修改读者展示契约与示例，保留版本日期的核验和证据记录，保留正式收录年月",
+  "status": "released_locally",
+  "method_effectiveness": "Not measured by regression tests; document separately when applicable"
+}
